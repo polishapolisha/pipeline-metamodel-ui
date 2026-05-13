@@ -10,7 +10,37 @@ const router = createRouter({
       name: 'dashboard',
       component: Dashboard,
     },
-    // Позже добавим: /objects, /parameters, /versions
+    // === ВЕТКИ ===
+    {
+      path: '/branches/select',
+      name: 'branch-select',
+      component: () => import('@/views/branches/BranchListView.vue'),
+    },
+    {
+      path: '/branches/create',
+      name: 'branch-create',
+      component: () => import('@/views/branches/BranchCreateView.vue'),
+    },
+    {
+      path: '/branches/:branchId/edit',
+      name: 'branch-edit',
+      component: () => import('@/views/entities/EntityTypeEditor.vue'),
+      props: true,
+    },
+    // === РЕДАКТОР СУЩНОСТЕЙ ===
+    {
+      path: '/branches/:branchId/entities/:entityType',
+      name: 'entity-editor',
+      component: () => import('@/views/entities/EntityTypeEditor.vue'),
+      props: true,
+    },
+    // === ВХОД ОТ ЛЕРЫ ===
+    {
+      path: '/metamodel-editor',
+      name: 'external-entry',
+      component: Dashboard,
+      props: (route) => ({ returnTo: route.query.returnTo }),
+    },
   ],
 });
 
