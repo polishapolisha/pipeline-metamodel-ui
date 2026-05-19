@@ -10,6 +10,12 @@ const router = createRouter({
       name: 'dashboard',
       component: Dashboard,
     },
+    {
+      path: '/repositories/create',
+      name: 'RepositoryCreate',
+      component: () => import('@/views/repositories/RepositoryCreateView.vue'),
+      meta: { requiresAuth: true }
+    },
     // === ВЕТКИ ===
     {
       path: '/branches/select',
@@ -21,19 +27,23 @@ const router = createRouter({
       name: 'branch-create',
       component: () => import('@/views/branches/BranchCreateView.vue'),
     },
+    
+    // ОБЗОР ВСЕХ СУЩНОСТЕЙ (главная страница редактирования ветки)
     {
       path: '/branches/:branchId/edit',
-      name: 'branch-edit',
-      component: () => import('@/views/entities/EntityTypeEditor.vue'),
+      name: 'branch-overview',
+      component: () => import('@/views/entities/BranchOverview.vue'),
       props: true,
     },
-    // === РЕДАКТОР СУЩНОСТЕЙ ===
+    
+    // ДЕТАЛЬНЫЙ РЕДАКТОР КОНКРЕТНОЙ СУЩНОСТИ
     {
-      path: '/branches/:branchId/entities/:entityType',
+      path: '/branches/:branchId/edit/:entityType',
       name: 'entity-editor',
       component: () => import('@/views/entities/EntityTypeEditor.vue'),
       props: true,
     },
+    
     // === ВХОД ОТ ЛЕРЫ ===
     {
       path: '/metamodel-editor',

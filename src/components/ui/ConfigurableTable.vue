@@ -117,7 +117,7 @@ const formatValue = (col: ColumnConfig<T>, row: T) => {
                 @click="emit('action', action.label, row)"
                 :title="action.label"
               >
-                {{ action.icon }}{{ action.label }}
+                {{ action.label }}
               </button>
             </td>
           </tr>

@@ -5,42 +5,35 @@ import { useBranchStore } from '@/stores/branch.store';
 
 const branchStore = useBranchStore();
 
-// Загружаем список веток при старте приложения
+// Загружаем репозитории при старте (для отображения контекста в шапке)
 onMounted(async () => {
   try {
-    await branchStore.fetchBranches();
-    console.log('✓ Ветки загружены:', branchStore.branches.length);
+    await branchStore.fetchRepositories();
   } catch (error) {
-    console.error('✗ Не удалось загрузить ветки:', error);
+    console.warn('⚠️ Не удалось загрузить репозитории:', error);
   }
 });
 </script>
 
 <template>
   <div class="app-layout">
-    <!-- Шапка приложения -->
+    <!-- Шапка -->
     <header class="app-header">
       <div class="header-content">
-        <h1 class="app-title">🛢️ Pipeline Metamodel Editor</h1>
+        <router-link to="/" class="app-title">
+          🛢️ Pipeline Metamodel Editor
+        </router-link>
         
-        <!-- Селектор веток (базовая версия) -->
-        <div class="branch-selector" v-if="branchStore.branches.length">
-          <label for="branch-select">Ветка:</label>
-          <select 
-            id="branch-select"
-            v-model="branchStore.currentBranchId"
-            @change="branchStore.switchBranch(branchStore.currentBranchId)"
+        <!-- Безопасный вывод контекста (без ошибок undefined) -->
+        <div class="context-badge" v-if="branchStore.currentRepository">
+          <span class="repo">📁 {{ branchStore.currentRepository.name }}</span>
+          <span 
+            v-if="branchStore.currentContent?.branchName" 
+            class="branch"
           >
-            <option 
-              v-for="branch in branchStore.branches" 
-              :key="branch.id" 
-              :value="branch.id"
-            >
-              {{ branch.name }}{{ branch.id === '00000000-0000-0000-0000-000000000000' ? ' (main)' : '' }}
-            </option>
-          </select>
+            🔀 {{ branchStore.currentContent.branchName }}
+          </span>
         </div>
-        <span v-else class="loading">Загрузка веток...</span>
       </div>
     </header>
 
@@ -99,36 +92,33 @@ body {
 .app-title {
   font-size: 1.25rem;
   font-weight: 600;
+  color: white;
+  text-decoration: none;
+  transition: opacity 0.2s;
 }
 
-.branch-selector {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.branch-selector label {
-  font-size: 0.9rem;
+.app-title:hover {
   opacity: 0.9;
 }
 
-.branch-selector select {
+.context-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  background: rgba(255, 255, 255, 0.1);
   padding: 0.4rem 0.8rem;
-  border-radius: 4px;
-  border: none;
-  background: #2d4a7c;
-  color: white;
-  font-size: 0.9rem;
-  cursor: pointer;
+  border-radius: 8px;
 }
 
-.branch-selector select:focus {
-  outline: 2px solid #63b3ed;
+.context-badge .repo {
+  font-weight: 500;
 }
 
-.loading {
-  font-size: 0.9rem;
-  opacity: 0.8;
+.context-badge .branch {
+  color: #93c5fd;
+  border-left: 1px solid rgba(255,255,255,0.3);
+  padding-left: 0.75rem;
 }
 
 .app-main {

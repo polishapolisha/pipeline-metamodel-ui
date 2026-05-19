@@ -1,72 +1,28 @@
 // src/api/entities.ts
 import apiClient from './client';
-import type { ObjectTypeDto, TypeParameterDto, UnitDto, ImageDto } from '@/types/api';
+import type { 
+  ObjectTypeDto, CreateObjectTypeRequest, UpdateObjectTypeRequest,
+  TypeParameterDto, CreateTypeParameterRequest, UpdateTypeParameterRequest,
+  UnitDto, CreateUnitRequest, ImageDto 
+} from '@/types/api';
 
-// === ObjectType ===
-export const objectTypesApi = {
-  getAll: (branchId: string): Promise<ObjectTypeDto[]> => 
-    apiClient.get('/ObjectTypes', { params: { branchId } }),
+export const entitiesApi = {
+  createObjectType: (data: CreateObjectTypeRequest) => apiClient.post<ObjectTypeDto>('/ObjectTypes', data),
+  updateObjectType: (id: string, data: UpdateObjectTypeRequest) => apiClient.put<ObjectTypeDto>(`/ObjectTypes/${id}`, data),
+  deleteObjectType: (id: string) => apiClient.delete<void>(`/ObjectTypes/${id}`),
   
-  getById: (id: string): Promise<ObjectTypeDto> => 
-    apiClient.get(`/ObjectTypes/${id}`),
+  createParameter: (data: CreateTypeParameterRequest) => apiClient.post<TypeParameterDto>('/TypeParameters', data),
+  updateParameter: (id: string, data: UpdateTypeParameterRequest) => apiClient.put<TypeParameterDto>(`/TypeParameters/${id}`, data),
+  deleteParameter: (id: string) => apiClient.delete<void>(`/TypeParameters/${id}`),
   
-  create: (data: Omit<ObjectTypeDto, 'id' | 'createdAt' | 'updatedAt'>) => 
-    apiClient.post('/ObjectTypes', data),
+  createUnit: (data: CreateUnitRequest) => apiClient.post<UnitDto>('/Units', data),
+  updateUnit: (id: string, data: Partial<UnitDto>) => apiClient.put<UnitDto>(`/Units/${id}`, data),
+  deleteUnit: (id: string) => apiClient.delete<void>(`/Units/${id}`),
   
-  update: (id: string, data: Partial<ObjectTypeDto>) => 
-    apiClient.put(`/ObjectTypes/${id}`, data),
-  
-  delete: (id: string) => 
-    apiClient.delete(`/ObjectTypes/${id}`),
-};
-
-// === TypeParameter ===
-export const parametersApi = {
-  getAll: (branchId: string, objectTypeId?: string): Promise<TypeParameterDto[]> => 
-    apiClient.get('/TypeParameters', { 
-      params: objectTypeId 
-        ? { branchId, objectTypeId }
-        : { branchId }
-    }),
-  
-  getByObject: (objectTypeId: string): Promise<TypeParameterDto[]> => 
-    apiClient.get(`/TypeParameters/by-object/${objectTypeId}`),
-  
-  create: (data: Omit<TypeParameterDto, 'id' | 'createdAt' | 'updatedAt'>) => 
-    apiClient.post('/TypeParameters', data),
-  
-  update: (id: string, data: Partial<TypeParameterDto>) => 
-    apiClient.put(`/TypeParameters/${id}`, data),
-  
-  delete: (id: string) => 
-    apiClient.delete(`/TypeParameters/${id}`),
-};
-
-// === Unit ===
-export const unitsApi = {
-  getAll: (branchId: string): Promise<UnitDto[]> => 
-    apiClient.get('/Units', { params: { branchId } }),
-  
-  create: (data: Omit<UnitDto, 'id' | 'createdAt' | 'updatedAt'>) => 
-    apiClient.post('/Units', data),
-  
-  update: (id: string, data: Partial<UnitDto>) => 
-    apiClient.put(`/Units/${id}`, data),
-  
-  delete: (id: string) => 
-    apiClient.delete(`/Units/${id}`),
-};
-
-// === Image ===
-export const imagesApi = {
-  getAll: (branchId: string): Promise<ImageDto[]> => 
-    apiClient.get('/Images', { params: { branchId } }),
-  
-  upload: (formData: FormData) => 
-    apiClient.post('/Images', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    }),
-  
-  delete: (id: string) => 
-    apiClient.delete(`/Images/${id}`),
+  //  ИСПРАВЛЕНА ФУНКЦИЯ ЗАГРУЗКИ ИЗОБРАЖЕНИЙ
+  uploadImage: (branchId: string, formData: FormData) => {
+    formData.append('branchId', branchId);
+    return apiClient.post<ImageDto>('/Images', formData);
+  },
+  deleteImage: (id: string) => apiClient.delete<void>(`/Images/${id}`),
 };
